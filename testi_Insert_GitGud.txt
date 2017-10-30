@@ -1,0 +1,154 @@
+CREATE TABLE kayttaja (
+  kayttaja_id SMALLINT NOT NULL auto_increment PRIMARY KEY,
+  kayttajatunnus VARCHAR(50) NOT NULL,
+  salasana_kryptattu VARCHAR(255) NOT NULL,
+  enabled tinyint NOT NULL,
+CONSTRAINT kayttaja_unique UNIQUE (kayttajatunnus)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE kayttaja_oikeudet (
+  id SMALLINT NOT NULL auto_increment PRIMARY KEY,
+  kayttaja_id SMALLINT NOT NULL,
+  oikeudet_id SMALLINT NOT NULL,
+  FOREIGN KEY (kayttaja_id) REFERENCES kayttaja(kayttaja_id) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  FOREIGN KEY (oikeudet_id) REFERENCES oikeudet(oikeudet_id) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE oikeudet (
+  oikeudet_id SMALLINT NOT NULL auto_increment PRIMARY KEY,
+  rooli varchar(25) NOT NULL UNIQUE
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE kysely (
+kysely_id SMALLINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+nimi VARCHAR(50) NOT NULL,
+kuvaus VARCHAR(255) NOT NULL,
+deployed tinyint NOT NULL,
+julkaisija_id SMALLINT NOT NULL,
+julkaisu_pvm DATE NOT NULL,
+FOREIGN KEY (julkaisija_id) REFERENCES kayttaja(kayttaja_id) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE kysymykset (
+kysymys_id SMALLINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+kysely_id SMALLINT NOT NULL,
+kysymys VARCHAR(255) NOT NULL,
+pakollinen tinyint NOT NULL,
+tyyppi SMALLINT NOT NULL,
+FOREIGN KEY (kysely_id) REFERENCES kysely(kysely_id) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE vastaukset (
+vastaus_id SMALLINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+kysymys_id SMALLINT NOT NULL,
+kayttaja_id SMALLINT NOT NULL,
+vastaus VARCHAR(255) NOT NULL,
+FOREIGN KEY (kayttaja_id) REFERENCES kayttaja(kayttaja_id) ON DELETE NO ACTION ON UPDATE NO ACTION,
+FOREIGN KEY (kysymys_id) REFERENCES kysymykset(kysymys_id) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE monivalinta (
+monivalinta_id SMALLINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+kysymys_id SMALLINT NOT NULL,
+vastaus VARCHAR(255) NOT NULL,
+FOREIGN KEY (kysymys_id) REFERENCES kysymykset(kysymys_id) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE monivalinta_vastaus (
+vastaus_id SMALLINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+monivalinta_id SMALLINT NOT NULL,
+kayttaja_id SMALLINT NOT NULL,
+FOREIGN KEY (monivalinta_id) REFERENCES monivalinta(monivalinta_id) ON DELETE NO ACTION ON UPDATE NO ACTION,
+FOREIGN KEY (kayttaja_id) REFERENCES kayttaja(kayttaja_id) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE skaalavalinta (
+skaalavalinta_id SMALLINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+kysymys_id SMALLINT NOT NULL,
+kayttaja_id SMALLINT NOT NULL,
+arvo SMALLINT NOT NULL,
+FOREIGN KEY (kysymys_id) REFERENCES kysymykset(kysymys_id) ON DELETE NO ACTION ON UPDATE NO ACTION,
+FOREIGN KEY (kayttaja_id) REFERENCES kayttaja(kayttaja_id) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+INSERT INTO kysely
+(kysely_id, nimi, kuvaus, deployed, julkaisija_id, julkaisu_pvm)
+values
+(1, 'Harjoituskysely', 'Tällä testataan vain toimivuutta.', 1 , 1, "2017-10-30");
+
+
+INSERT INTO kysymykset
+(kysymys_id, kysely_id, kysymys, pakollinen, tyyppi)
+values
+(1, 1, 'KUKA OLET?!', 1, 1);
+
+
+INSERT INTO vastaukset
+ (vastaus_id, kysymys_id, kayttaja_id, vastaus)
+values
+ (1, 1, 1, 'En tiedä kuka olen.');
+
+INSERT INTO monivalinta
+(monivalinta_id, kysymys_id, vastaus)
+values
+(1, 1, 'esimerkkivastaus');
+
+INSERT INTO monivalinta_vastaus
+(vastaus_id, kayttaja_id, monivalinta_id)
+values
+(1, 1, 1);
+
+INSERT INTO skaalavalinta
+(skaalavalinta_id, kysymys_id, kayttaja_id, arvo)
+values
+(1, 1, 1, 4);
+
+INSERT INTO oikeudet
+ (oikeudet_id, rooli)
+VALUES
+ (1, 'ROLE_ADMIN');
+
+
+INSERT INTO kayttaja
+ (kayttaja_id, kayttajatunnus, salasana_kryptattu, enabled)
+VALUES
+ (1, 'Testaaja', 'Testaaja', 1);
+
+
+INSERT INTO kayttaja_oikeudet
+(id, kayttaja_id, oikeudet_id)
+VALUES
+(1,1,1);
+
+
+DELETE FROM kysely;
+DELETE FROM kysymykset;
+DELETE FROM vastaukset;
+DELETE FROM monivalinta;
+DELETE FROM monivalinta_vastaus;
+DELETE FROM skaalavalinta;
+DELETE FROM kayttaja_oikeudet;
+DELETE FROM kayttaja;
+DELETE FROM oikeudet;
+
+
+
+DROP TABLE kayttaja;
+DROP TABLE kayttaja_oikeudet;
+DROP TABLE oikeudet;
+DROP TABLE kysely;
+DROP TABLE kysymykset;
+DROP TABLE vastaukset;
+DROP TABLE monivalinta_vastaus;
+DROP TABLE monivalinta;
+DROP TABLE skaalavalinta;
