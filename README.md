@@ -1,5 +1,5 @@
 # GitGud-Dokumentit
-Dokumentit ja muut tänne ei koodia.
+Dokumentit ja muut tänne. (ei koodia)
 
 - Kurssin sivu: http://hhmoodle.haaga-helia.fi/course/view.php?id=15532
 - Kurssin aikataulu: http://hhmoodle.haaga-helia.fi/pluginfile.php/1047000/mod_resource/content/5/swd4tn022-5-aikataulu_ja_aiheet.pdf
